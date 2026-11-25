@@ -1,3 +1,5 @@
+For changes shipped by this fork, also follow [the workbench maintenance contract](deploy/ebook-workbench/AGENTS.md).
+
 ## Project
 
 - Book/library management app with Kobo device support.

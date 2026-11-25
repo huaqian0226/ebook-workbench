@@ -1,3 +1,5 @@
+**电子书工作台** · [部署本 Fork 的固定版本](deploy/ebook-workbench/README.md) · [公开取书来源](deploy/ebook-workbench/sources/README.md) · [工程 Issues](https://github.com/huaqian0226/ebook-workbench/issues)
+
 <div align="center">
 
 <h1>

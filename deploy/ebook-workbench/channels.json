@@ -1,0 +1,112 @@
+[
+  {
+    "name": "Oxford SOLO",
+    "url": "https://solo.bodleian.ox.ac.uk/",
+    "note": "用 Oxford 身份查看电子馆藏，选定版本后进入 View Online。"
+  },
+  {
+    "name": "OpenStax · Astronomy 2e",
+    "url": "https://openstax.org/details/books/astronomy-2e",
+    "note": "教材网页提供在线阅读及下载选项。"
+  },
+  {
+    "name": "Cambridge DAMTP · Cosmology",
+    "url": "https://www.damtp.cam.ac.uk/user/ep551/",
+    "note": "从作者的宇宙学课程资料获取讲义。"
+  },
+  {
+    "name": "MIT OpenCourseWare · Astronomy",
+    "url": "https://ocw.mit.edu/courses/8-282j-introduction-to-astronomy-spring-2006/",
+    "note": "课程阅读清单与开放教学资料。"
+  },
+  {
+    "name": "Open Textbook Library · Physics",
+    "url": "https://open.umn.edu/opentextbooks/subjects/physics",
+    "note": "按物理主题查教材、版本与许可。"
+  },
+  {
+    "name": "Directory of Open Access Books",
+    "url": "https://doabooks.org/",
+    "note": "从开放获取书目回到出版方。"
+  },
+  {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks",
+    "note": "选择 EPUB，在确认页获取最终文件链接。"
+  },
+  {
+    "name": "Project Gutenberg",
+    "url": "https://www.gutenberg.org/",
+    "note": "书页列出可阅读和下载的格式。"
+  },
+  {
+    "name": "Oxfordshire Libraries · Libby / BorrowBox",
+    "url": "https://www.oxfordshire.gov.uk/oxfordshire-libraries/library/books-and-reading/ebooks-and-eaudio",
+    "note": "沿图书馆入口登录，在供应商账户中借阅、续借或归还。"
+  },
+  {
+    "name": "Awesome Offline Knowledge",
+    "url": "https://github.com/gdamdam/awesome-offline-knowledge",
+    "note": "离线资料索引，沿具体条目核对来源。"
+  },
+  {
+    "name": "Free Programming Books",
+    "url": "https://github.com/EbookFoundation/free-programming-books",
+    "note": "按语言与主题找编程书。"
+  },
+  {
+    "name": "FMHY · Reading",
+    "url": "https://github.com/fmhy/FMHY/wiki/Reading",
+    "note": "社区线索，使用具体书目前核对授权与可用性。"
+  },
+  {
+    "name": "Open Library",
+    "url": "https://openlibrary.org/",
+    "note": "按作品寻找不同语言、出版社及 ISBN 的版本。"
+  },
+  {
+    "name": "Google Books",
+    "url": "https://books.google.com/",
+    "note": "查看版本、预览和出版信息。"
+  },
+  {
+    "name": "Apple Books · 英国",
+    "url": "https://books.apple.com/gb/",
+    "note": "查小说、生活、历史与传记，访问条件以英国商店书页为准。"
+  },
+  {
+    "name": "WorldCat",
+    "url": "https://search.worldcat.org/",
+    "note": "按题名或 ISBN 查找馆藏与版本。"
+  },
+  {
+    "name": "Anna’s Archive",
+    "url": "https://annas-archive.gl/",
+    "note": "在浏览器继续此题名或 ISBN 的检索，再核对版本、发布方和访问条件。"
+  },
+  {
+    "name": "豆瓣读书",
+    "url": "https://book.douban.com/",
+    "note": "查中文出版物、译者、版本与书评。"
+  },
+  {
+    "name": "中文维基文库",
+    "url": "https://zh.wikisource.org/",
+    "note": "查古典文学、史料及已收录的中文原文。"
+  },
+  {
+    "name": "LibriVox",
+    "url": "https://librivox.org/",
+    "note": "有声书志愿者录音。可在 BookOrbit 内搜索并取得可下载的版本。"
+  },
+  {
+    "name": "Pepper&Carrot · 简体中文漫画",
+    "url": "https://www.peppercarrot.com/cn/webcomics/index.html",
+    "note": "David Revoy 的开放漫画，有多语言译本，原站按章节阅读。"
+  },
+  {
+    "name": "杜克大学公共领域研究中心 · 漫画",
+    "url": "https://cspd.law.duke.edu/comics/digital/",
+    "note": "作者授权发行的 Bound by Law? 漫画原件。"
+  }
+]

@@ -1,0 +1,8 @@
+/.env
+/owner.json
+/data/
+/books/
+/backups/
+/legacy/
+__pycache__/
+.DS_Store

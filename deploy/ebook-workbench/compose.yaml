@@ -1,0 +1,53 @@
+name: ebook-workbench
+services:
+  postgres:
+    image: pgvector/pgvector@sha256:38681dc6eaf55308e2a4c6de392d131652dcfac70e1263e35cd9b5ea3fe39782
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: bookorbit
+      POSTGRES_DB: bookorbit
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?required}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bookorbit -d bookorbit"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  app:
+    # Upstream v3.10.0, pinned together with its database image.
+    image: ghcr.io/bookorbit/bookorbit@sha256:507a84c08c100244c27bce68ce59670da5dc8c3bc9054dd4aea3630977c42885
+    restart: unless-stopped
+    init: true
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    cap_add: [CHOWN, DAC_OVERRIDE, FOWNER, SETGID, SETUID]
+    security_opt: ["no-new-privileges:true"]
+    ports:
+      - "127.0.0.1:${APP_PORT:-8820}:3000"
+    environment:
+      NODE_ENV: production
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: bookorbit
+      POSTGRES_DB: bookorbit
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?required}
+      JWT_SECRET: ${JWT_SECRET:?required}
+      SETUP_BOOTSTRAP_TOKEN: ${SETUP_BOOTSTRAP_TOKEN:?required}
+      BOOK_REQUEST_ENCRYPTION_KEY: ${BOOK_REQUEST_ENCRYPTION_KEY:?required}
+      APP_URL: http://127.0.0.1:${APP_PORT:-8820}
+      CLIENT_URL: http://127.0.0.1:${APP_PORT:-8820}
+      BOOK_DOCK_PATH: /data/book-dock
+      LIBRARY_BROWSE_ROOT: /books
+      PUID: ${PUID:-1000}
+      PGID: ${PGID:-1000}
+      TZ: Europe/London
+    volumes:
+      - ./data/app:/data
+      - ./books:/books
+    depends_on:
+      postgres:
+        condition: service_healthy
+    stop_grace_period: 30s
