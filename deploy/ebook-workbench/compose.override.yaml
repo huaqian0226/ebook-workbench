@@ -1,0 +1,70 @@
+# Private HTTP catalogue services for BookOrbit. Only the app publishes a host port.
+x-catalog: &catalog
+  image: ${COMPOSE_PROJECT_NAME:-ebook-workbench}/catalog-provider:0.1.0
+  pull_policy: never
+  restart: unless-stopped
+  read_only: true
+  tmpfs: [/tmp]
+  cap_drop: [ALL]
+  security_opt: ["no-new-privileges:true"]
+
+services:
+  douban:
+    image: ghcr.io/bookorbit/douban-provider@sha256:f17f5673745219603aa548e0c2b5a12fa6ec86ba055861b4187c880008b09d2b
+    restart: unless-stopped
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+  oxford-solo:
+    <<: *catalog
+    build: ./catalog-providers
+    environment:
+      CATALOG_PROVIDER: oxford-solo
+  apple-books-gb:
+    <<: *catalog
+    environment:
+      CATALOG_PROVIDER: apple-books-gb
+  standard-ebooks:
+    <<: *catalog
+    environment:
+      CATALOG_PROVIDER: standard-ebooks
+  free-programming-books:
+    <<: *catalog
+    environment:
+      CATALOG_PROVIDER: free-programming-books
+  pepper-carrot-zh:
+    <<: *catalog
+    environment:
+      CATALOG_PROVIDER: pepper-carrot-zh
+  librivox:
+    <<: *catalog
+    environment:
+      CATALOG_PROVIDER: librivox
+  wikisource-zh:
+    <<: *catalog
+    environment:
+      CATALOG_PROVIDER: wikisource-zh
+  open-textbook-library:
+    <<: *catalog
+    environment:
+      CATALOG_PROVIDER: open-textbook-library
+  openstax:
+    <<: *catalog
+    environment:
+      CATALOG_PROVIDER: openstax
+  doab:
+    <<: *catalog
+    environment:
+      CATALOG_PROVIDER: doab
+      CATALOG_CACHE_DIR: /catalog-cache
+    volumes: [doab-cache:/catalog-cache]
+  gutenberg:
+    <<: *catalog
+    environment:
+      CATALOG_PROVIDER: gutenberg
+      CATALOG_CACHE_DIR: /catalog-cache
+    volumes: [gutenberg-cache:/catalog-cache]
+
+volumes:
+  doab-cache:
+  gutenberg-cache:

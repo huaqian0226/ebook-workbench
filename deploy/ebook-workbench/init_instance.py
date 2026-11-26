@@ -8,6 +8,7 @@ import secrets
 import shutil
 
 from channel_guide import TITLE, build
+from metadata_providers import copy_bundle
 
 
 def main():
@@ -40,6 +41,7 @@ def main():
     bundle = Path(__file__).resolve().parent
     shutil.copyfile(bundle / "compose.yaml", base / "compose.yaml")
     shutil.copyfile(bundle / "channels.json", base / "channels.json")
+    copy_bundle(base)
     for plugin in sorted((bundle / "sources").glob("*/index.mjs")):
         dest = base / "data/app/plugins/indexers" / plugin.parent.name
         dest.mkdir(parents=True, exist_ok=True)

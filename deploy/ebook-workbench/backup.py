@@ -6,13 +6,27 @@ import os
 from pathlib import Path
 import re
 import subprocess
+import sys
 import tarfile
 import tempfile
 from urllib.request import ProxyHandler, Request, build_opener
 
 
 def compose(base, *args, **kwargs):
-    return subprocess.run(["docker", "compose", *args], cwd=base, check=True, **kwargs)
+    # Always use this instance, even if the operator's shell points Compose at another project.
+    base = base.resolve()
+    env_file = base / ".env"
+    settings = dict(line.split("=", 1) for line in env_file.read_text().splitlines() if "=" in line)
+    project = settings["COMPOSE_PROJECT_NAME"]
+    if not re.fullmatch(r"[a-z][a-z0-9-]+", project):
+        raise SystemExit("Invalid instance project name")
+    env = {key: value for key, value in os.environ.items() if key not in settings and not key.startswith("COMPOSE_")}
+    cmd = ["docker", "compose", "-p", project, "--project-directory", str(base), "--env-file", str(env_file),
+           "-f", str(base / "compose.yaml")]
+    override = base / "compose.override.yaml"
+    if override.is_file():
+        cmd.extend(["-f", str(override)])
+    return subprocess.run([*cmd, *args], cwd=base, env=env, check=True, **kwargs)
 
 
 def dump_records(base, output):
@@ -64,7 +78,7 @@ def backup(base):
             with (tmp / "database.dump").open("wb") as f:
                 compose(base, "exec", "-T", "postgres", "pg_dump", "-U", "bookorbit", "-Fc", "bookorbit", stdout=f)
             with tarfile.open(tmp / "backup.tmp", "w:gz", compresslevel=1) as tar:
-                for name in ("compose.yaml", ".env", "owner.json", "channels.json", "books", "data/app"):
+                for name in ("compose.yaml", "compose.override.yaml", "catalog-providers", ".env", "owner.json", "channels.json", "books", "data/app"):
                     path = base / name
                     if path.exists():
                         tar.add(path, arcname=name)
@@ -99,8 +113,17 @@ def restore(archive, dest, project, port):
     with (dest / "database.dump").open("rb") as sql:
         compose(dest, "exec", "-T", "postgres", "pg_restore", "-U", "bookorbit", "-d", "bookorbit",
                 "--exit-on-error", "--single-transaction", stdin=sql)
-    compose(dest, "up", "-d", "--wait")
-    print(f"Restored {project} at http://127.0.0.1:{port}/")
+    compose(dest, "up", "-d", "--wait", "app")
+    print(f"Restored {project} at http://127.0.0.1:{port}/", flush=True)
+    if (dest / "catalog-providers" / "Dockerfile").is_file():
+        try:
+            compose(dest, "build", "oxford-solo")
+            compose(dest, "up", "-d", "--wait", "--wait-timeout", "240")
+        except subprocess.CalledProcessError:
+            print("The library is running. Catalogue services need attention. "
+                  "From the restored directory run docker compose build oxford-solo, "
+                  "then docker compose up -d --wait.", file=sys.stderr)
+
 
 
 if __name__ == "__main__":
