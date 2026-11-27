@@ -70,7 +70,7 @@ vi.mock('@/composables/useDisplaySettings', () => ({
 }))
 
 vi.mock('@/features/library/composables/useLibraries', () => ({
-  useLibraries: () => ({ libraries: ref([]), fetchLibraries: mocks.fetchLibraries, refreshLibraries: vi.fn() }),
+  useLibraries: () => ({ libraries: ref([]), fetchLibraries: mocks.fetchLibraries, refreshLibraries: vi.fn<() => Promise<void>>() }),
 }))
 
 vi.mock('@/features/library/composables/useLibraryPermissions', () => ({
