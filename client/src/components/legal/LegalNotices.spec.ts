@@ -30,6 +30,7 @@ describe('LegalNotices', () => {
     expect(wrapper.get('.legal-dialog').text()).toContain('Copyright (C) 2025-2026 neon.')
     expect(wrapper.get('.legal-dialog').text()).toContain('Additional copyright is held by the respective BookOrbit contributors.')
     expect(wrapper.get('.legal-dialog').text()).toContain('provided without warranty')
+    expect(wrapper.get('.legal-dialog').text()).toContain('This is a modified version of BookOrbit')
   })
 
   it('links attribution, source, license, and additional terms to the project', async () => {
@@ -40,7 +41,7 @@ describe('LegalNotices', () => {
     const links = wrapper.findAll('a')
     expect(links.map((link) => link.attributes('href'))).toEqual([
       'https://github.com/bookorbit/bookorbit',
-      'https://github.com/bookorbit/bookorbit',
+      'https://github.com/huaqian0226/ebook-workbench/tree/workbench-v0.3.0',
       'https://github.com/bookorbit/bookorbit/blob/main/LICENSE',
       'https://github.com/bookorbit/bookorbit/blob/main/ADDITIONAL_TERMS.md',
     ])
