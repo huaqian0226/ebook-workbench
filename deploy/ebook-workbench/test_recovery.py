@@ -30,6 +30,16 @@ class RestoreTests(unittest.TestCase):
             self.assertNotIn("APP_PORT", run.call_args.kwargs["env"])
             self.assertNotIn("COMPOSE_FILE", run.call_args.kwargs["env"])
 
+    def test_legacy_compose_project_name(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            (base / ".env").write_text("APP_PORT=8820\n")
+            (base / "compose.yaml").write_text("name: original-shelf\nservices: {}\n")
+            with patch("backup.subprocess.run") as run:
+                compose(base, "config")
+            argv = run.call_args.args[0]
+            self.assertEqual(argv[argv.index("-p") + 1], "original-shelf")
+
     def test_a_failed_catalog_build_still_leaves_the_library_running(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

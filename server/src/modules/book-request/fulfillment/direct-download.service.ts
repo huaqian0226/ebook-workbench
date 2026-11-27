@@ -8,6 +8,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import type { ConfigType } from '@nestjs/config';
 import { BOOK_FORMATS } from '@bookorbit/types';
 
+import { chapterFileName, openChapterFile } from './chapter-file';
 import { storageConfig } from '../../../config/config';
 import { sanitizeLogValue } from '../../../common/utils/log-sanitize.utils';
 import { safeFetch } from '../../../common/utils/safe-fetch';
@@ -98,6 +99,11 @@ const USER_AGENT = 'BookOrbit';
  */
 const ALLOW_PRIVATE = false;
 
+function directSourceUrl(raw: string): Promise<URL> {
+  if (chapterFileName(raw)) return Promise.resolve(new URL(raw));
+  return ensureSafeUrl(raw, { allowPrivate: ALLOW_PRIVATE });
+}
+
 interface Progress {
   state: DownloadStatus['state'];
   downloadedBytes: number;
@@ -158,7 +164,7 @@ export class DirectDownloadService {
   }
 
   async add(release: DirectDownloadRequest): Promise<{ clientKey: string }> {
-    const url = await ensureSafeUrl(release.fileUrl, { allowPrivate: ALLOW_PRIVATE });
+    const url = await directSourceUrl(release.fileUrl);
 
     const directory = join(this.root, release.clientKey);
     const target = safeJoin(directory, stagedDirectFileName(release.fileName, release.format));
@@ -181,7 +187,7 @@ export class DirectDownloadService {
       return false;
     }
 
-    const url = await ensureSafeUrl(download.directUrl, { allowPrivate: ALLOW_PRIVATE });
+    const url = await directSourceUrl(download.directUrl);
     const directory = join(this.root, download.clientKey);
     const target = safeJoin(directory, download.directFileName);
     const existingBytes = await stat(target)
@@ -350,7 +356,10 @@ export class DirectDownloadService {
     validator: string | null,
     expectedBytes: number | null,
   ): Promise<void> {
-    const response = await this.open(url, signal, offset > 0 ? { Range: `bytes=${offset}-`, 'If-Range': validator as string } : {});
+    const edition = chapterFileName(url.href);
+    const response = edition
+      ? await openChapterFile('/chapter-cache', edition, offset)
+      : await this.open(url, signal, offset > 0 ? { Range: `bytes=${offset}-`, 'If-Range': validator as string } : {});
     const responseMeta = validateDownloadResponse(response, offset, expectedBytes, validator);
     const totalBytes = responseMeta.totalBytes;
     if (totalBytes !== null && totalBytes > MAX_FILE_BYTES) {

@@ -1,18 +1,19 @@
 # 电子书工作台
 
-本目录可直接部署 BookOrbit v3.10.0，使用发布镜像、PostgreSQL、12 个外部书目提供商和 4 个公开文件来源。应用、数据库镜像均由摘要固定。PDF、EPUB、CBZ 和有声书共用一个书库。桌面壳只需登记本机网址。[BookOrbit 安装](https://bookorbit.app/installation/) · [请求与选版](https://bookorbit.app/book-requests/)
+本目录可直接部署 BookOrbit v3.10.0，使用发布镜像、PostgreSQL、12 个外部书目提供商和 6 个取件来源。应用以固定摘要的上游镜像为基础构建，只读挂载按章节生成的 EPUB。数据库镜像按摘要固定。PDF、EPUB、CBZ 和有声书共用一个书库。桌面壳只需登记本机网址。[BookOrbit 安装](https://bookorbit.app/installation/) · [请求与选版](https://bookorbit.app/book-requests/)
 
 ## 安装
 
-需要 Docker Compose、Python 3.12 或更新版本，以及一个只供本地用户访问的目录。在本目录执行以下命令。示例使用 Mac 应用支持目录与回环端口 8820。
+需要 Docker Compose、Python 3.12 或更新版本，以及一个只供本地用户访问的目录。在完整 Fork 根目录按上游要求安装 Node 和 pnpm 依赖，执行 `pnpm install --frozen-lockfile`、`pnpm --filter @bookorbit/types build` 和 `pnpm --filter client run build-only` 构建带有版本与源码说明的界面。在本目录执行以下命令。示例使用 Mac 应用支持目录与回环端口 8820。
 
 ```sh
 instance="$HOME/Library/Application Support/BookOrbit"
 python3 init_instance.py "$instance"
-docker compose --project-directory "$instance" build oxford-solo
+docker compose --project-directory "$instance" build app oxford-solo chapter-books
 docker compose --project-directory "$instance" up -d --wait
 python3 configure.py "$instance"
 python3 metadata_providers.py "$instance"
+python3 file_sources.py "$instance"
 ```
 
 打开 [BookOrbit](http://127.0.0.1:8820/)，使用实例目录中 `owner.json` 的本地账户。初始化会为数据库、引导登录和来源凭据分别生成随机密钥。`configure.py` 会建立共享书架、设定请求默认目的地、载入公开来源并扫描书库。应用容器由 Docker 的 `unless-stopped` 策略恢复。Mac 需在登录时启动自己的 Docker 运行时。
@@ -22,6 +23,14 @@ python3 metadata_providers.py "$instance"
 在「设置 → 书库 → 元数据 → 提供商 → External」查看已安装服务。从「请求」搜题名并选择书目。LibriVox 使用有声书类型，中文漫画使用电子书类型。文件来源、借阅权限和浏览器登录分别由对应功能管理。[22 个渠道的用途、提供商与样书](catalog-providers/README.md)
 
 已有实例可运行 `python3 metadata_providers.py "$instance" --copy` 同步 Compose 扩展和服务源码，再执行上方的构建、启动和 `metadata_providers.py "$instance"`。已有自定义 `compose.override.yaml` 的部署先合并自己的服务配置。注册脚本通过设置接口测试真实书目后启用，可重复运行，以提供商 key 保留原 ID。快照服务首次启动需下载公开索引，Compose 健康检查会等候索引就绪。查找服务只监听 Docker 内部网络。书目字段的自动填充优先级可由账户另行设定。
+
+## 中文电子书取件
+
+在 Requests 搜「西游记」或「西遊記」，进入 Pick release，选择 Project Gutenberg 的 EPUB。插件通过本机索引找版本，再核验基金会镜像的目录。遇到简体题名未命中会向中文维基百科查询繁体写法。BookOrbit 可能要求复核请求与 EPUB 的简繁题名；确认书名、作者和文件一致后选择入库。目录服务的内部地址为 `http://gutenberg:8080`。
+
+章节来源现提供《老殘遊記》和《雪月》（Snowmoon）。作者与译者来源、修订、全文检查及 EPUB 生成程序见 [章节服务](chapter-books/)。运行在容器内的生成程序从固定版本读取完整内容，输出完成才对搜索开放。选定版本后，BookOrbit 从只读卷读取对应成品。应用保持公共网络文件的原有下载规则。已入库 EPUB 与续读位置分别由书库文件和数据库拥有，章节检索缓存可由上游重建。已入库版本随完整备份独立恢复。
+
+现有实例升级请先运行 `python3 backup.py backup "$instance"`。在完整 Fork 工作副本中使用 `python3 metadata_providers.py "$instance" --copy` 更新构建材料（有自定义 Compose 合并后部署）。使用上文的 build 命令，再执行 `docker compose --project-directory "$instance" up -d --wait chapter-books app` 与 `python3 file_sources.py "$instance"`。这两项注册通过 BookOrbit 正常设置 API 热安装到运行中的应用，保留其他来源与账户设置。恢复需要 Docker、网络及归档；归档包含派生镜像和书源的构建材料。
 
 ## 找书与阅读
 
@@ -53,4 +62,4 @@ python3 backup.py restore "/path/to/bookorbit-backup.tar.gz" "/path/to/empty-dir
 
 ## 版本与开发
 
-本配置直接运行 BookOrbit 官方镜像。来源插件可独立发布和安装。要修改 BookOrbit 自身的检索、界面或阅读器，在同一 Fork 中改 `client/`、`server/` 或 `packages/`，按上游测试和署名要求制作派生镜像，经隔离验收后替换 Compose 的镜像摘要。GitHub 代码提交与 Mac 上线分开操作。Fork 的开发约定及升级流程见 [AGENTS.md](AGENTS.md)。[上游许可证与附加条款](../../ADDITIONAL_TERMS.md)
+部署的 BookOrbit 3.10.0 派生镜像增加了只读 EPUB 缓存的文件交接。来源插件可独立发布和安装。要修改 BookOrbit 自身的检索、界面或阅读器，在同一 Fork 中改 `client/`、`server/` 或 `packages/`，按上游测试和署名要求制作派生镜像，经隔离验收后替换 Compose 的镜像摘要。GitHub 代码提交与 Mac 上线分开操作。Fork 的开发约定及升级流程见 [AGENTS.md](AGENTS.md)。[上游许可证与附加条款](../../ADDITIONAL_TERMS.md)

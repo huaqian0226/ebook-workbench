@@ -7,6 +7,7 @@ import { useLegalNotices } from './useLegalNotices'
 const { t } = useI18n()
 const { open, closeLegalNotices, handleOpenChange } = useLegalNotices()
 
+const FORK_SOURCE_URL = 'https://github.com/huaqian0226/ebook-workbench/tree/workbench-v0.3.0'
 const PROJECT_URL = 'https://github.com/bookorbit/bookorbit'
 const LICENSE_URL = `${PROJECT_URL}/blob/main/LICENSE`
 const ADDITIONAL_TERMS_URL = `${PROJECT_URL}/blob/main/ADDITIONAL_TERMS.md`
@@ -58,9 +59,15 @@ const ADDITIONAL_TERMS_URL = `${PROJECT_URL}/blob/main/ADDITIONAL_TERMS.md`
 
           <p class="text-foreground">{{ t('components.legalNotices.licenseSummary') }}</p>
 
+          <div class="rounded-lg border border-border p-3">
+            <strong>电子书工作台 · workbench-v0.3.0</strong>
+            <p>此版本于 2026-11-27 修改，增加中文章节 EPUB 的入库支持。</p>
+            <p lang="en">This is a modified version of BookOrbit and is not an official BookOrbit release.</p>
+          </div>
+
           <div class="grid gap-2 sm:grid-cols-3">
             <a
-              :href="PROJECT_URL"
+              :href="FORK_SOURCE_URL"
               target="_blank"
               rel="noopener noreferrer"
               class="inline-flex items-center justify-center gap-1.5 rounded-md border border-border px-3 py-2 font-medium text-foreground outline-hidden hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring"

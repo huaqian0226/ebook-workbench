@@ -61,6 +61,21 @@ class Api:
 
 def copy_bundle(base):
     bundle = Path(__file__).resolve().parent
+
+    for name in ("chapter-books", "chapter-runtime"):
+        target = base / name
+        target.mkdir(exist_ok=True)
+        for source in (bundle / name).iterdir():
+            if source.name == "Dockerfile" or (source.suffix in (".py", ".cjs", ".json") and not source.name.startswith("test")):
+                shutil.copy2(source, target / source.name)
+    client = bundle.parents[1] / "client/dist"
+    if not (client / "index.html").is_file():
+        raise SystemExit("Build the fork client first: pnpm --filter client run build-only")
+    public = base / "chapter-runtime/public"
+    shutil.copytree(client, public, dirs_exist_ok=True)
+    core = bundle.parents[1] / "server/src/modules/book-request/fulfillment"
+    for name in ("direct-download.service.ts", "chapter-file.ts"):
+        shutil.copy2(core / name, base / "chapter-runtime" / name)
     shutil.copy2(bundle / "compose.override.yaml", base / "compose.override.yaml")
     dest = base / "catalog-providers"
     dest.mkdir(exist_ok=True)

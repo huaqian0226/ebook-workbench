@@ -9,6 +9,16 @@ x-catalog: &catalog
   security_opt: ["no-new-privileges:true"]
 
 services:
+  app:
+    image: ${COMPOSE_PROJECT_NAME:-ebook-workbench}/bookorbit:3.10.0-chapters.1
+    pull_policy: never
+    build: ./chapter-runtime
+    volumes: [chapter-cache:/chapter-cache:ro]
+  chapter-books:
+    <<: *catalog
+    image: ${COMPOSE_PROJECT_NAME:-ebook-workbench}/chapter-books:0.1.0
+    build: ./chapter-books
+    volumes: [chapter-cache:/chapter-cache]
   douban:
     image: ghcr.io/bookorbit/douban-provider@sha256:f17f5673745219603aa548e0c2b5a12fa6ec86ba055861b4187c880008b09d2b
     restart: unless-stopped
@@ -66,5 +76,6 @@ services:
     volumes: [gutenberg-cache:/catalog-cache]
 
 volumes:
+  chapter-cache:
   doab-cache:
   gutenberg-cache:

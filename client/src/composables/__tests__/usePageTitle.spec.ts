@@ -28,10 +28,10 @@ describe('usePageTitle', () => {
     )
 
     route.fullPath = '/genres/31?libraryId=14'
-    document.title = 'Genre #31 · BookOrbit'
+    document.title = 'Genre #31 · 电子书工作台'
     await nextTick()
 
-    expect(document.title).toBe('Fantasy · BookOrbit')
+    expect(document.title).toBe('Fantasy · 电子书工作台')
     wrapper.unmount()
   })
 
@@ -49,10 +49,10 @@ describe('usePageTitle', () => {
 
     route.path = '/authors'
     route.fullPath = '/authors'
-    document.title = 'Authors · BookOrbit'
+    document.title = 'Authors · 电子书工作台'
     await nextTick()
 
-    expect(document.title).toBe('Authors · BookOrbit')
+    expect(document.title).toBe('Authors · 电子书工作台')
     wrapper.unmount()
   })
 
@@ -76,16 +76,16 @@ describe('usePageTitle', () => {
       }),
     )
 
-    expect(document.title).toBe('Fiction · BookOrbit')
+    expect(document.title).toBe('Fiction · 电子书工作台')
 
     active.value = false
     await nextTick()
-    document.title = 'Library #4 · BookOrbit'
+    document.title = 'Library #4 · 电子书工作台'
 
     active.value = true
     await nextTick()
 
-    expect(document.title).toBe('Fiction · BookOrbit')
+    expect(document.title).toBe('Fiction · 电子书工作台')
     wrapper.unmount()
   })
 
@@ -111,11 +111,11 @@ describe('usePageTitle', () => {
 
     active.value = false
     await nextTick()
-    document.title = 'Authors · BookOrbit'
+    document.title = 'Authors · 电子书工作台'
     title.value = 'Renamed Fiction'
     await nextTick()
 
-    expect(document.title).toBe('Authors · BookOrbit')
+    expect(document.title).toBe('Authors · 电子书工作台')
     wrapper.unmount()
   })
 })
